@@ -46,8 +46,11 @@ ts=1/fs;
 t=0:ts:tiempograb-ts;
 b=[1 -0.95];
 yf=filter(b,1,y); %Proceso de filtrado
+len = length(y); %longitud del vector
+avg_e = sum(y.*y)/len; %promedio señal entera
+THRES = 0.2;
 soundsc(y,fs) %Reproduce señal filtrada
-audiowrite(yf,fs,'voz'); %Graba en archivo .wav
+wavwrite(yf,fs,'voz'); %Graba en archivo .wav
 %---- Grafica señal grabada
 % figure(1);
 % plot(t,y);grid on;
@@ -61,7 +64,7 @@ msgbox('Grabación Terminada');
 guidata(hObject, handles);
 
 function BotonReproducir_Callback(hObject, eventdata, handles)
-[y,fs]=audioread('voz'); %Lectura del archivo grabado
+[y,fs]=wavread('voz'); %Lectura del archivo grabado
 soundsc(y,fs); %Reproducción de archivo grabado
 
 
@@ -77,7 +80,7 @@ end
 
 function [nombre, transf_usuario, transff_bd, min_error] = LeerDirectorio()
 
-voz_usuario=audioread('voz');
+voz_usuario=wavread('voz');
 norm_usuario=normalizar(voz_usuario);
 transf_usuario=abs((fft(norm_usuario))); %transformada rapida de Fourier
 %Esto nos permitira manejar los errores cuando la voz no se encuentre en
@@ -91,7 +94,7 @@ for k = 1:length(lee_audios)%recorre número de audios guardados en el directorio
     audio_nom = lee_audios(k).name; %Obtiene el nombre de los audios
     
     if ~strcmp(audio_nom,'voz.wav')
-        voz_bd = audioread([pwd '\BD\' audio_nom]);
+        voz_bd = wavread([pwd '\BD\' audio_nom]);
         norm_voz_bd=normalizar(voz_bd);
         transf_voz_bd=abs((fft(norm_voz_bd)));
 
@@ -144,7 +147,7 @@ soundsc(y,fs);
 b=[1 -0.95];
 yf=filter(b,1,y);
 
-audiowrite(yf,fs,strcat('/BD/',leer));
+wavwrite(yf,fs,strcat('/BD/',leer));
  
 msgbox('Se ha completado con éxito');
 guidata(hObject, handles);
